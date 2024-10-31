@@ -10,6 +10,9 @@
 [sub_resource type="GDScript" id="GDScript_p8770"]
 script/source = "extends Panel
 
+@export var SingleMode:Node
+@export var MultiMode:Node
+
 func _ready() -> void:
 	var args = OS.get_cmdline_user_args()
 	if(args.has(\"server\")):
@@ -21,16 +24,16 @@ func _process(_delta: float) -> void:
 
 func _on_sigle_mode_toggled(toggled_on: bool) -> void:
 	if(toggled_on):
-		tween_show($SigleMode)
+		tween_show(SingleMode)
 	else:
-		tween_hide($SigleMode)
+		tween_hide(SingleMode)
 		
 
 func _on_multi_mode_toggled(toggled_on: bool) -> void:
 	if(toggled_on):
-		tween_show($MultiMode)
+		tween_show(MultiMode)
 	else:
-		tween_hide($MultiMode)
+		tween_hide(MultiMode)
 		
 
 func tween_show(node: CanvasItem) -> void:
@@ -89,7 +92,7 @@ bg_color = Color(0, 0, 0, 0)
 border_width_bottom = 3
 border_color = Color(1, 1, 1, 1)
 
-[node name="MainMenu" type="Panel"]
+[node name="MainMenu" type="Panel" node_paths=PackedStringArray("SingleMode", "MultiMode")]
 material = SubResource("ShaderMaterial_dwslx")
 anchors_preset = 15
 anchor_right = 1.0
@@ -101,6 +104,8 @@ offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_p8770")
+SingleMode = NodePath("MarginContainer/ReferenceRect/SigleMode")
+MultiMode = NodePath("MarginContainer/ReferenceRect/MultiMode")
 
 [node name="Background" parent="." instance=ExtResource("1_einef")]
 autoscroll = Vector2(150, 87)
@@ -117,42 +122,58 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0.231373)
 
-[node name="Title" type="Label" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ReferenceRect" type="ReferenceRect" parent="MarginContainer"]
+layout_mode = 2
+border_width = 2.0
+
+[node name="Title" type="Label" parent="MarginContainer/ReferenceRect"]
 material = SubResource("ShaderMaterial_s5lgo")
 layout_mode = 1
 anchors_preset = -1
-offset_left = 50.0
-offset_top = 50.0
+offset_left = 32.0
+offset_top = 32.0
 theme_override_colors/font_color = Color(0, 0, 0, 0)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 100
 text = "Magic Stone"
 
-[node name="Buttons" type="VBoxContainer" parent="."]
+[node name="Buttons" type="VBoxContainer" parent="MarginContainer/ReferenceRect"]
 layout_mode = 1
 anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 0.25
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 300.0
-offset_bottom = -10.0
+grow_vertical = 0
 alignment = 2
 
-[node name="ButtonSigle" type="Button" parent="Buttons"]
+[node name="ButtonSigle" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Single Mode"
 
-[node name="ButtonTurrets" type="Button" parent="Buttons"]
+[node name="ButtonTurrets" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Edit Turrets"
 
-[node name="ButtonMulti" type="Button" parent="Buttons"]
+[node name="ButtonMulti" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
 visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
@@ -160,32 +181,31 @@ toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Multiplayer"
 
-[node name="ButtonOptions" type="Button" parent="Buttons"]
+[node name="ButtonOptions" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Options"
 
-[node name="ButtonQuit" type="Button" parent="Buttons"]
+[node name="ButtonQuit" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Quit"
 
-[node name="SigleMode" type="Panel" parent="."]
+[node name="SigleMode" type="Panel" parent="MarginContainer/ReferenceRect"]
 visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 400.0
-offset_top = -550.0
-offset_right = 800.0
-offset_bottom = -50.0
+anchor_left = 0.3
+anchor_top = 0.93
+anchor_right = 0.7
+anchor_bottom = 0.93
+grow_horizontal = 2
 grow_vertical = 0
 
-[node name="ButtonCampaign" type="Button" parent="SigleMode"]
+[node name="ButtonCampaign" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -196,7 +216,7 @@ offset_bottom = 180.0
 theme_override_font_sizes/font_size = 75
 text = "Campaign"
 
-[node name="ButtonCustom" type="Button" parent="SigleMode"]
+[node name="ButtonCustom" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
@@ -211,7 +231,7 @@ theme_override_font_sizes/font_size = 40
 text = "Custom
 Map"
 
-[node name="ButtonSandbox" type="Button" parent="SigleMode"]
+[node name="ButtonSandbox" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -227,20 +247,19 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 40
 text = "Sandbox"
 
-[node name="MultiMode" type="Panel" parent="."]
+[node name="MultiMode" type="Panel" parent="MarginContainer/ReferenceRect"]
 visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 400.0
-offset_top = -550.0
-offset_right = 800.0
-offset_bottom = -50.0
+anchor_left = 0.3
+anchor_top = 0.93
+anchor_right = 0.7
+anchor_bottom = 0.93
+grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Name" type="LineEdit" parent="MultiMode"]
+[node name="Name" type="LineEdit" parent="MarginContainer/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -254,7 +273,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_4bjyj")
 placeholder_text = "Enter your username... "
 caret_blink = true
 
-[node name="Button" type="Button" parent="MultiMode"]
+[node name="Button" type="Button" parent="MarginContainer/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -266,7 +285,7 @@ text = "Add server"
 icon = ExtResource("2_hvkeo")
 expand_icon = true
 
-[node name="ServerList" type="ScrollContainer" parent="MultiMode"]
+[node name="ServerList" type="ScrollContainer" parent="MarginContainer/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -279,21 +298,20 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="Servers" type="VBoxContainer" parent="MultiMode/ServerList"]
+[node name="Servers" type="VBoxContainer" parent="MarginContainer/ReferenceRect/MultiMode/ServerList"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Credits" type="VBoxContainer" parent="."]
+[node name="Credits" type="HBoxContainer" parent="MarginContainer/ReferenceRect"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_top = 50.0
-offset_right = -50.0
+offset_top = 32.0
 grow_horizontal = 0
 
-[node name="Elements" type="RichTextLabel" parent="Credits"]
+[node name="Elements" type="RichTextLabel" parent="MarginContainer/ReferenceRect/Credits"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 bbcode_enabled = true
@@ -302,7 +320,7 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 0
 
-[node name="Data" type="RichTextLabel" parent="Credits"]
+[node name="Data" type="RichTextLabel" parent="MarginContainer/ReferenceRect/Credits"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 bbcode_enabled = true
@@ -321,5 +339,5 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.21, 0.21, 0.21, 0.34902)
 
-[connection signal="toggled" from="Buttons/ButtonSigle" to="." method="_on_sigle_mode_toggled"]
-[connection signal="toggled" from="Buttons/ButtonMulti" to="." method="_on_multi_mode_toggled"]
+[connection signal="toggled" from="MarginContainer/ReferenceRect/Buttons/ButtonSigle" to="." method="_on_sigle_mode_toggled"]
+[connection signal="toggled" from="MarginContainer/ReferenceRect/Buttons/ButtonMulti" to="." method="_on_multi_mode_toggled"]
