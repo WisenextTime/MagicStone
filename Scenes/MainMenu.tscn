@@ -1,9 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://d28ennmwou1lg"]
+[gd_scene load_steps=18 format=3 uid="uid://d28ennmwou1lg"]
 
 [ext_resource type="PackedScene" uid="uid://dlrejw0s1ufal" path="res://Scenes/Backgrounds/Triggles.tscn" id="1_einef"]
 [ext_resource type="ButtonGroup" uid="uid://fusd1dl2ukw3" path="res://Assets/Misc/MenuButtonGroup.res" id="1_uudli"]
 [ext_resource type="Texture2D" uid="uid://64xnwrvuw3b5" path="res://Assets/Icons/IconNew.png" id="2_hvkeo"]
 [ext_resource type="Shader" path="res://Assets/Shaders/FrostedGlass.gdshader" id="4_atoae"]
+[ext_resource type="Shader" path="res://Assets/Shaders/Glow.gdshader" id="5_rmllm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dwslx"]
 
@@ -12,6 +13,7 @@ script/source = "extends Panel
 
 @export var SingleMode:Node
 @export var MultiMode:Node
+@export var Background:Node
 
 func _ready() -> void:
 	var args = OS.get_cmdline_user_args()
@@ -20,7 +22,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	@warning_ignore(\"integer_division\")
-	$Background.line_color = Color.from_hsv(Time.get_ticks_msec()/100%255/255.0,1,1)
+	Background.line_color = Color.from_hsv(Time.get_ticks_msec()/100%255/255.0,1,1)
 
 func _on_sigle_mode_toggled(toggled_on: bool) -> void:
 	if(toggled_on):
@@ -53,6 +55,23 @@ func tween_hide(node: CanvasItem) -> void:
 	animation.tween_property(node,\"global_position\",Vector2(200,position_y),0.2)
 	animation.parallel().tween_property(node,\"modulate\",Color(1,1,1,0),0.2)
 	animation.tween_callback(node.hide)
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1woej"]
+viewport_path = NodePath("BackGround/SubViewPort")
+
+[sub_resource type="GDScript" id="GDScript_iw5yf"]
+script/source = "@tool
+extends TextureRect
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	$SubViewPort.size = size;
+	pass # Replace with function body.
+
+func _on_resized():
+	$SubViewPort.size = size;
+	pass # Replace with function body.
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n3xon"]
@@ -92,7 +111,15 @@ bg_color = Color(0, 0, 0, 0)
 border_width_bottom = 3
 border_color = Color(1, 1, 1, 1)
 
-[node name="MainMenu" type="Panel" node_paths=PackedStringArray("SingleMode", "MultiMode")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ehma3"]
+shader = ExtResource("5_rmllm")
+shader_parameter/Strenth = 3.0
+shader_parameter/Range = 1.663
+shader_parameter/Step = 1
+shader_parameter/Glow = 0.673
+shader_parameter/Subtraction = 0.013
+
+[node name="MainMenu" type="Panel" node_paths=PackedStringArray("SingleMode", "MultiMode", "Background")]
 material = SubResource("ShaderMaterial_dwslx")
 anchors_preset = 15
 anchor_right = 1.0
@@ -104,25 +131,45 @@ offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_p8770")
-SingleMode = NodePath("MarginContainer/ReferenceRect/SigleMode")
-MultiMode = NodePath("MarginContainer/ReferenceRect/MultiMode")
+SingleMode = NodePath("Gui/ReferenceRect/SigleMode")
+MultiMode = NodePath("Gui/ReferenceRect/MultiMode")
+Background = NodePath("BackGround/SubViewPort/Background")
 
-[node name="Background" parent="." instance=ExtResource("1_einef")]
-autoscroll = Vector2(150, 87)
-line_color = Color(1, 0, 0, 1)
-triggle_color = Color(0.34, 0.34, 0.34, 1)
-
-[node name="Filter" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_n3xon")
+[node name="BackGround" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("ViewportTexture_1woej")
+expand_mode = 1
+script = SubResource("GDScript_iw5yf")
+
+[node name="SubViewPort" type="SubViewport" parent="BackGround"]
+use_hdr_2d = true
+size = Vector2i(1244, 784)
+
+[node name="Background" parent="BackGround/SubViewPort" instance=ExtResource("1_einef")]
+autoscroll = Vector2(150, 87)
+line_color = Color(1, 0, 0, 1)
+triggle_color = Color(0.34, 0.34, 0.34, 1)
+
+[node name="BlurFilter" type="ColorRect" parent="BackGround/SubViewPort"]
+material = SubResource("ShaderMaterial_n3xon")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(1, 1, 1, 0.231373)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="Gui" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -134,11 +181,11 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="ReferenceRect" type="ReferenceRect" parent="MarginContainer"]
+[node name="ReferenceRect" type="ReferenceRect" parent="Gui"]
 layout_mode = 2
 border_width = 2.0
 
-[node name="Title" type="Label" parent="MarginContainer/ReferenceRect"]
+[node name="Title" type="Label" parent="Gui/ReferenceRect"]
 material = SubResource("ShaderMaterial_s5lgo")
 layout_mode = 1
 anchors_preset = -1
@@ -150,7 +197,7 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 100
 text = "Magic Stone"
 
-[node name="Buttons" type="VBoxContainer" parent="MarginContainer/ReferenceRect"]
+[node name="Buttons" type="VBoxContainer" parent="Gui/ReferenceRect"]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
@@ -159,21 +206,21 @@ anchor_bottom = 1.0
 grow_vertical = 0
 alignment = 2
 
-[node name="ButtonSigle" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
+[node name="ButtonSigle" type="Button" parent="Gui/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Single Mode"
 
-[node name="ButtonTurrets" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
+[node name="ButtonTurrets" type="Button" parent="Gui/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Edit Turrets"
 
-[node name="ButtonMulti" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
+[node name="ButtonMulti" type="Button" parent="Gui/ReferenceRect/Buttons"]
 visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
@@ -181,19 +228,19 @@ toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Multiplayer"
 
-[node name="ButtonOptions" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
+[node name="ButtonOptions" type="Button" parent="Gui/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 toggle_mode = true
 button_group = ExtResource("1_uudli")
 text = "Options"
 
-[node name="ButtonQuit" type="Button" parent="MarginContainer/ReferenceRect/Buttons"]
+[node name="ButtonQuit" type="Button" parent="Gui/ReferenceRect/Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Quit"
 
-[node name="SigleMode" type="Panel" parent="MarginContainer/ReferenceRect"]
+[node name="SigleMode" type="Panel" parent="Gui/ReferenceRect"]
 visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
@@ -205,7 +252,7 @@ anchor_bottom = 0.93
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="ButtonCampaign" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
+[node name="ButtonCampaign" type="Button" parent="Gui/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -216,7 +263,7 @@ offset_bottom = 180.0
 theme_override_font_sizes/font_size = 75
 text = "Campaign"
 
-[node name="ButtonCustom" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
+[node name="ButtonCustom" type="Button" parent="Gui/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
@@ -231,7 +278,7 @@ theme_override_font_sizes/font_size = 40
 text = "Custom
 Map"
 
-[node name="ButtonSandbox" type="Button" parent="MarginContainer/ReferenceRect/SigleMode"]
+[node name="ButtonSandbox" type="Button" parent="Gui/ReferenceRect/SigleMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -247,7 +294,7 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 40
 text = "Sandbox"
 
-[node name="MultiMode" type="Panel" parent="MarginContainer/ReferenceRect"]
+[node name="MultiMode" type="Panel" parent="Gui/ReferenceRect"]
 visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
@@ -259,7 +306,7 @@ anchor_bottom = 0.93
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Name" type="LineEdit" parent="MarginContainer/ReferenceRect/MultiMode"]
+[node name="Name" type="LineEdit" parent="Gui/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -273,7 +320,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_4bjyj")
 placeholder_text = "Enter your username... "
 caret_blink = true
 
-[node name="Button" type="Button" parent="MarginContainer/ReferenceRect/MultiMode"]
+[node name="Button" type="Button" parent="Gui/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -285,7 +332,7 @@ text = "Add server"
 icon = ExtResource("2_hvkeo")
 expand_icon = true
 
-[node name="ServerList" type="ScrollContainer" parent="MarginContainer/ReferenceRect/MultiMode"]
+[node name="ServerList" type="ScrollContainer" parent="Gui/ReferenceRect/MultiMode"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -298,12 +345,12 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="Servers" type="VBoxContainer" parent="MarginContainer/ReferenceRect/MultiMode/ServerList"]
+[node name="Servers" type="VBoxContainer" parent="Gui/ReferenceRect/MultiMode/ServerList"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Credits" type="HBoxContainer" parent="MarginContainer/ReferenceRect"]
+[node name="Credits" type="HBoxContainer" parent="Gui/ReferenceRect"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 1.0
@@ -311,7 +358,7 @@ anchor_right = 1.0
 offset_top = 32.0
 grow_horizontal = 0
 
-[node name="Elements" type="RichTextLabel" parent="MarginContainer/ReferenceRect/Credits"]
+[node name="Elements" type="RichTextLabel" parent="Gui/ReferenceRect/Credits"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 bbcode_enabled = true
@@ -320,7 +367,7 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 0
 
-[node name="Data" type="RichTextLabel" parent="MarginContainer/ReferenceRect/Credits"]
+[node name="Data" type="RichTextLabel" parent="Gui/ReferenceRect/Credits"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 bbcode_enabled = true
@@ -329,15 +376,16 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 0
 
-[node name="ColorRect" type="ColorRect" parent="."]
-visible = false
+[node name="GlowFilter" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_ehma3")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.21, 0.21, 0.21, 0.34902)
+mouse_filter = 2
 
-[connection signal="toggled" from="MarginContainer/ReferenceRect/Buttons/ButtonSigle" to="." method="_on_sigle_mode_toggled"]
-[connection signal="toggled" from="MarginContainer/ReferenceRect/Buttons/ButtonMulti" to="." method="_on_multi_mode_toggled"]
+[connection signal="resized" from="BackGround" to="BackGround" method="_on_resized"]
+[connection signal="toggled" from="Gui/ReferenceRect/Buttons/ButtonSigle" to="." method="_on_sigle_mode_toggled"]
+[connection signal="toggled" from="Gui/ReferenceRect/Buttons/ButtonMulti" to="." method="_on_multi_mode_toggled"]
