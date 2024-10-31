@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://d28ennmwou1lg"]
+[gd_scene load_steps=14 format=3 uid="uid://d28ennmwou1lg"]
 
 [ext_resource type="PackedScene" uid="uid://dlrejw0s1ufal" path="res://Scenes/Backgrounds/Triggles.tscn" id="1_einef"]
 [ext_resource type="ButtonGroup" uid="uid://fusd1dl2ukw3" path="res://Assets/Misc/MenuButtonGroup.res" id="1_uudli"]
 [ext_resource type="Texture2D" uid="uid://64xnwrvuw3b5" path="res://Assets/Icons/IconNew.png" id="2_hvkeo"]
+[ext_resource type="Shader" path="res://Assets/Shaders/FrostedGlass.gdshader" id="4_atoae"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dwslx"]
 
@@ -50,6 +51,12 @@ func tween_hide(node: CanvasItem) -> void:
 	animation.parallel().tween_property(node,\"modulate\",Color(1,1,1,0),0.2)
 	animation.tween_callback(node.hide)
 "
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n3xon"]
+shader = ExtResource("4_atoae")
+shader_parameter/Strenth = 1.966
+shader_parameter/Range = 0.899
+shader_parameter/Step = 3
 
 [sub_resource type="Shader" id="Shader_6b3s1"]
 code = "shader_type canvas_item;
@@ -99,6 +106,16 @@ script = SubResource("GDScript_p8770")
 autoscroll = Vector2(150, 87)
 line_color = Color(1, 0, 0, 1)
 triggle_color = Color(0.34, 0.34, 0.34, 1)
+
+[node name="Filter" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_n3xon")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.231373)
 
 [node name="Title" type="Label" parent="."]
 material = SubResource("ShaderMaterial_s5lgo")
@@ -295,6 +312,7 @@ scroll_active = false
 autowrap_mode = 0
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
