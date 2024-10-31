@@ -1,0 +1,307 @@
+[gd_scene load_steps=12 format=3 uid="uid://d28ennmwou1lg"]
+
+[ext_resource type="PackedScene" uid="uid://dlrejw0s1ufal" path="res://Scenes/Backgrounds/Triggles.tscn" id="1_einef"]
+[ext_resource type="ButtonGroup" uid="uid://fusd1dl2ukw3" path="res://Assets/Misc/MenuButtonGroup.res" id="1_uudli"]
+[ext_resource type="Texture2D" uid="uid://64xnwrvuw3b5" path="res://Assets/Icons/IconNew.png" id="2_hvkeo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dwslx"]
+
+[sub_resource type="GDScript" id="GDScript_p8770"]
+script/source = "extends Panel
+
+func _ready() -> void:
+	var args = OS.get_cmdline_user_args()
+	if(args.has(\"server\")):
+		get_tree().change_scene_to_file(\"res://Scenes/Server/server_test.tscn\")
+
+func _process(_delta: float) -> void:
+	@warning_ignore(\"integer_division\")
+	$Background.line_color = Color.from_hsv(Time.get_ticks_msec()/100%255/255.0,1,1)
+
+func _on_sigle_mode_toggled(toggled_on: bool) -> void:
+	if(toggled_on):
+		tween_show($SigleMode)
+	else:
+		tween_hide($SigleMode)
+		
+
+func _on_multi_mode_toggled(toggled_on: bool) -> void:
+	if(toggled_on):
+		tween_show($MultiMode)
+	else:
+		tween_hide($MultiMode)
+		
+
+func tween_show(node: CanvasItem) -> void:
+	var animation = get_tree().create_tween()
+	var position_y = node.global_position.y
+	animation.tween_property(node,\"modulate\",Color(1,1,1,0),0)
+	animation.tween_callback(node.show)
+	animation.parallel().tween_property(node,\"global_position\",Vector2(200,position_y),0)
+	animation.tween_property(node,\"modulate\",Color(1,1,1,1),0.2)
+	animation.parallel().tween_property(node,\"global_position\",Vector2(400,position_y),0.2)
+	
+func tween_hide(node: CanvasItem) -> void:
+	var animation = get_tree().create_tween()
+	var position_y = node.global_position.y
+	animation.tween_property(node,\"global_position\",Vector2(400,position_y),0)
+	animation.parallel().tween_property(node,\"modulate\",Color(1,1,1,1),0)
+	animation.tween_property(node,\"global_position\",Vector2(200,position_y),0.2)
+	animation.parallel().tween_property(node,\"modulate\",Color(1,1,1,0),0.2)
+	animation.tween_callback(node.hide)
+"
+
+[sub_resource type="Shader" id="Shader_6b3s1"]
+code = "shader_type canvas_item;
+uniform sampler2D noise_texture;
+
+void fragment()
+{
+	COLOR.a *= texture(noise_texture,vec2((sin(TIME)+1.0)/2.0,0.0)).r;
+	COLOR.rgb = vec3(fract(TIME),fract(TIME+0.5),fract(TIME+0.3));
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_hta4t"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wvyk1"]
+frequency = 0.0122
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_25ukf"]
+seamless = true
+seamless_blend_skirt = 0.287
+color_ramp = SubResource("Gradient_hta4t")
+noise = SubResource("FastNoiseLite_wvyk1")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s5lgo"]
+shader = SubResource("Shader_6b3s1")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_25ukf")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4bjyj"]
+bg_color = Color(0, 0, 0, 0)
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+
+[node name="MainMenu" type="Panel"]
+material = SubResource("ShaderMaterial_dwslx")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_p8770")
+
+[node name="Background" parent="." instance=ExtResource("1_einef")]
+autoscroll = Vector2(150, 87)
+line_color = Color(1, 0, 0, 1)
+triggle_color = Color(0.34, 0.34, 0.34, 1)
+
+[node name="Title" type="Label" parent="."]
+material = SubResource("ShaderMaterial_s5lgo")
+layout_mode = 1
+anchors_preset = -1
+offset_left = 50.0
+offset_top = 50.0
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 100
+text = "Magic Stone"
+
+[node name="Buttons" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 300.0
+offset_bottom = -10.0
+alignment = 2
+
+[node name="ButtonSigle" type="Button" parent="Buttons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+toggle_mode = true
+button_group = ExtResource("1_uudli")
+text = "Single Mode"
+
+[node name="ButtonTurrets" type="Button" parent="Buttons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+toggle_mode = true
+button_group = ExtResource("1_uudli")
+text = "Edit Turrets"
+
+[node name="ButtonMulti" type="Button" parent="Buttons"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+toggle_mode = true
+button_group = ExtResource("1_uudli")
+text = "Multiplayer"
+
+[node name="ButtonOptions" type="Button" parent="Buttons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+toggle_mode = true
+button_group = ExtResource("1_uudli")
+text = "Options"
+
+[node name="ButtonQuit" type="Button" parent="Buttons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Quit"
+
+[node name="SigleMode" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(400, 500)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 400.0
+offset_top = -550.0
+offset_right = 800.0
+offset_bottom = -50.0
+grow_vertical = 0
+
+[node name="ButtonCampaign" type="Button" parent="SigleMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 75
+text = "Campaign"
+
+[node name="ButtonCustom" type="Button" parent="SigleMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -300.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Custom
+Map"
+
+[node name="ButtonSandbox" type="Button" parent="SigleMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -300.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Sandbox"
+
+[node name="MultiMode" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(400, 500)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 400.0
+offset_top = -550.0
+offset_right = 800.0
+offset_bottom = -50.0
+grow_vertical = 0
+
+[node name="Name" type="LineEdit" parent="MultiMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_4bjyj")
+placeholder_text = "Enter your username... "
+caret_blink = true
+
+[node name="Button" type="Button" parent="MultiMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 80.0
+offset_right = -10.0
+theme_override_font_sizes/font_size = 30
+text = "Add server"
+icon = ExtResource("2_hvkeo")
+expand_icon = true
+
+[node name="ServerList" type="ScrollContainer" parent="MultiMode"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 160.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="Servers" type="VBoxContainer" parent="MultiMode/ServerList"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Credits" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 50.0
+offset_right = -50.0
+grow_horizontal = 0
+
+[node name="Elements" type="RichTextLabel" parent="Credits"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+bbcode_enabled = true
+text = "[img=40x40]res://Assets/Icons/IconElement.png[/img]     [font_size=30][color=Cyan]10000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="Data" type="RichTextLabel" parent="Credits"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+bbcode_enabled = true
+text = "[img=40x40]res://Assets/Icons/IconData.png[/img]     [font_size=30][color=Yellow]10000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.21, 0.21, 0.21, 0.34902)
+
+[connection signal="toggled" from="Buttons/ButtonSigle" to="." method="_on_sigle_mode_toggled"]
+[connection signal="toggled" from="Buttons/ButtonMulti" to="." method="_on_multi_mode_toggled"]

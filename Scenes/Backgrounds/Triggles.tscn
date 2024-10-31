@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlrejw0s1ufal"]
+
+[sub_resource type="GDScript" id="GDScript_v7yrv"]
+script/source = "extends Parallax2D
+@export var line_color:Color = Color.FUCHSIA
+@export var triggle_color:Color = Color8(93,66,38)
+
+func _process(_delta: float) -> void:
+	$Linegrid.default_color = line_color
+	$Triggle2.color = triggle_color
+	$Triggle.color = triggle_color * 0.8
+	$Triggle3.color = triggle_color * 0.8
+"
+
+[sub_resource type="Shader" id="Shader_up2bn"]
+code = "shader_type canvas_item;
+
+void fragment()
+{
+	vec2 true_coord = SCREEN_UV / SCREEN_PIXEL_SIZE;
+	int offset = (int(true_coord.y)-int(true_coord.x));
+	int time_offset = int(TIME*30.0);
+	if(abs(time_offset-offset)%100>10)
+	{
+		COLOR.rgb *= 0.2;
+	}
+	else
+	{
+		COLOR.rgb*=2.;
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jufo4"]
+shader = SubResource("Shader_up2bn")
+
+[node name="Background" type="Parallax2D"]
+modulate = Color(1, 1, 1, 0.0941176)
+repeat_size = Vector2(300, 174)
+repeat_times = 100
+script = SubResource("GDScript_v7yrv")
+
+[node name="Triggle" type="Polygon2D" parent="."]
+color = Color(0.239583, 0.165792, 0.105417, 1)
+polygon = PackedVector2Array(0, 0, 0, 174, 150, 87)
+
+[node name="Triggle2" type="Polygon2D" parent="."]
+color = Color(0.364583, 0.257031, 0.149479, 1)
+polygon = PackedVector2Array(0, 0, 150, 87, 150, -87)
+
+[node name="Triggle3" type="Polygon2D" parent="."]
+color = Color(0.268229, 0.191359, 0.0768705, 1)
+polygon = PackedVector2Array(300, 0, 150, 87, 150, -87)
+
+[node name="Linegrid" type="Line2D" parent="."]
+material = SubResource("ShaderMaterial_jufo4")
+points = PackedVector2Array(0, 0, 0, 174, 150, 87, 0, 0, 0, 174, -150, 87, -150, 174, -150, 0, -150, 87, 0, 0)
+width = 5.0
+default_color = Color(0.913725, 0, 1, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2

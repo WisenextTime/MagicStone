@@ -1,0 +1,107 @@
+[gd_scene load_steps=7 format=3 uid="uid://njtbeowgbnvb"]
+
+[ext_resource type="Texture2D" uid="uid://cir3ibpmqt7ld" path="res://Assets/Icons/IconDel.png" id="1_scg1d"]
+[ext_resource type="Texture2D" uid="uid://dnx13iln5mvul" path="res://Assets/Icons/IconEdit.png" id="2_n2503"]
+[ext_resource type="Texture2D" uid="uid://cwiju6sb5m1oq" path="res://Assets/Icons/IconJoin.png" id="3_rs4o1"]
+[ext_resource type="Texture2D" uid="uid://bsmkctbniadj2" path="res://Assets/Icons/IconNetwork.png" id="4_swn7o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jpbe4"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="GDScript" id="GDScript_3u2ur"]
+script/source = "extends Panel
+
+@export var server_ip:String
+@export var server_name:String
+@export var server_port:int
+
+func _ready() -> void:
+	$Name.text = server_name if server_name!=\"\" else server_ip
+	var server_url = server_ip + \":\" + str(server_port)
+	var server = WebSocketPeer.new()
+	var status = server.connect_to_url(server_url)
+	if (status != OK):
+		$NextWork/Network.frame = 0
+	else:
+		await get_tree().create_timer(2).timeout
+		server.send_text(\"TestConnect\")
+	$NextWork.show()
+"
+
+[node name="Server" type="Panel"]
+custom_minimum_size = Vector2(0, 50)
+offset_right = 395.0
+offset_bottom = 50.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_jpbe4")
+script = SubResource("GDScript_3u2ur")
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.6
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_bottom = -2.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "A server"
+text_overrun_behavior = 4
+
+[node name="ButtonDel" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.6
+anchor_right = 0.7
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_bottom = -10.0
+icon = ExtResource("1_scg1d")
+expand_icon = true
+
+[node name="ButtonEdit" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7
+anchor_right = 0.8
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_bottom = -10.0
+icon = ExtResource("2_n2503")
+expand_icon = true
+
+[node name="ButtonJoin" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8
+anchor_right = 0.9
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_bottom = -10.0
+icon = ExtResource("3_rs4o1")
+expand_icon = true
+
+[node name="NextWork" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.95
+anchor_top = 0.5
+anchor_right = 0.95
+anchor_bottom = 0.5
+
+[node name="Network" type="Sprite2D" parent="NextWork"]
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("4_swn7o")
+hframes = 4

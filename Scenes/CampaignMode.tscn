@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://b05v5wtn5qkkf"]
+
+[ext_resource type="PackedScene" uid="uid://dlrejw0s1ufal" path="res://Scenes/Backgrounds/Triggles.tscn" id="1_47nfo"]
+[ext_resource type="PackedScene" uid="uid://donrkh2h6qxtx" path="res://Scenes/Prefabs/Level.tscn" id="1_o08vc"]
+
+[node name="CampaignMode" type="Node2D"]
+
+[node name="Background" parent="." instance=ExtResource("1_47nfo")]
+
+[node name="GameCamera" type="Camera2D" parent="."]
+
+[node name="Levels" type="CanvasGroup" parent="."]
+
+[node name="1-01" parent="Levels" instance=ExtResource("1_o08vc")]
+scale = Vector2(0.9, 0.9)
+main_color = Color(1, 0, 1, 1)
+text = "1-01"
+data = "l-1-1"
+
+[node name="a-01" parent="Levels" instance=ExtResource("1_o08vc")]
+position = Vector2(150, 87)
+scale = Vector2(0.9, 0.9)
+main_color = Color(1, 1, 0, 1)
+condition = "l-1-1"
+text = "A-01"
+data = "l-a-1"
+
+[node name="a-02" parent="Levels" instance=ExtResource("1_o08vc")]
+position = Vector2(300, 0)
+scale = Vector2(0.9, 0.9)
+main_color = Color(1, 1, 0, 1)
+condition = "l-a-1"
+text = "A-02"
+data = "l-a-2"
+
+[node name="1-02" parent="Levels" instance=ExtResource("1_o08vc")]
+position = Vector2(0, 174)
+scale = Vector2(0.9, 0.9)
+main_color = Color(1, 0, 1, 1)
+condition = "l-1-1"
+text = "1-02"
+data = "l-1-2"
+
+[node name="1-03" parent="Levels" instance=ExtResource("1_o08vc")]
+position = Vector2(0, 348)
+scale = Vector2(0.9, 0.9)
+main_color = Color(1, 0, 0, 1)
+condition = "1-1-2"
+text = "1-03"
+data = "l-1-3"
