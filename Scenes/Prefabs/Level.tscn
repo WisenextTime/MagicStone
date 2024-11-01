@@ -76,8 +76,7 @@ polygon = PackedVector2Array(-90, 0, -45, 78, 45, 78, 90, 0, 45, -78, -45, -78)
 visible = false
 polygon = PackedVector2Array(-50, -87, -100, 0, -50, 87, 50, 87, 100, 0, 50, -87)
 
-[node name="Text" type="Label" parent="."]/
-self_modulate = Color(0.641934, 0.641934, 0.641934, 1)/
+[node name="Text" type="Label" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

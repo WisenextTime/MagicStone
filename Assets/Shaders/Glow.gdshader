@@ -28,6 +28,6 @@ void fragment() {
 	color.r=max(0.,color.r-Subtraction);
 	color.g=max(0.,color.g-Subtraction);
 	color.b=max(0.,color.b-Subtraction);
-	
+
 	COLOR.rgb = color.rgb + SCREEN_COLOR_CURRENT.rgb;
 }

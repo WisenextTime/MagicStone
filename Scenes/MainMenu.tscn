@@ -76,8 +76,8 @@ func _on_resized():
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n3xon"]
 shader = ExtResource("4_atoae")
-shader_parameter/Strenth = 1.966
-shader_parameter/Range = 0.899
+shader_parameter/Strenth = 3.0
+shader_parameter/Range = 1.533
 shader_parameter/Step = 3
 
 [sub_resource type="Shader" id="Shader_6b3s1"]
@@ -114,10 +114,10 @@ border_color = Color(1, 1, 1, 1)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ehma3"]
 shader = ExtResource("5_rmllm")
 shader_parameter/Strenth = 3.0
-shader_parameter/Range = 1.663
+shader_parameter/Range = 1.349
 shader_parameter/Step = 1
-shader_parameter/Glow = 0.673
-shader_parameter/Subtraction = 0.013
+shader_parameter/Glow = 3.776
+shader_parameter/Subtraction = 0.0
 
 [node name="MainMenu" type="Panel" node_paths=PackedStringArray("SingleMode", "MultiMode", "Background")]
 material = SubResource("ShaderMaterial_dwslx")
@@ -201,7 +201,6 @@ text = "Magic Stone"
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
-anchor_right = 0.25
 anchor_bottom = 1.0
 grow_vertical = 0
 alignment = 2
@@ -245,11 +244,9 @@ visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.93
-anchor_right = 0.7
-anchor_bottom = 0.93
-grow_horizontal = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_bottom = -20.0
 grow_vertical = 0
 
 [node name="ButtonCampaign" type="Button" parent="Gui/ReferenceRect/SigleMode"]
@@ -299,11 +296,9 @@ visible = false
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.93
-anchor_right = 0.7
-anchor_bottom = 0.93
-grow_horizontal = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_bottom = -20.0
 grow_vertical = 0
 
 [node name="Name" type="LineEdit" parent="Gui/ReferenceRect/MultiMode"]
