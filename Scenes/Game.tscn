@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgbuprcf7lh0m"]
+
+[ext_resource type="PackedScene" uid="uid://dlrejw0s1ufal" path="res://Scenes/Backgrounds/Triggles.tscn" id="1_dkomv"]
+[ext_resource type="PackedScene" uid="uid://ckut7i7d5yw6o" path="res://Scenes/Map.tscn" id="2_mwae2"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Background" parent="." instance=ExtResource("1_dkomv")]
+
+[node name="Map" parent="." instance=ExtResource("2_mwae2")]
